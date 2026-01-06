@@ -16,6 +16,7 @@ WORKDIR /tailscale.d
 ENV TAILSCALE_VERSION="latest"
 ENV TAILSCALE_HOSTNAME="railway-app"
 ENV PORT="8080"
+ENV TS_USERSPACE_PROXY_BUFFER_SIZE="256KiB"
 
 # Fetch and install Tailscale binaries
 RUN wget https://pkgs.tailscale.com/stable/tailscale_${TAILSCALE_VERSION}_amd64.tgz && \
