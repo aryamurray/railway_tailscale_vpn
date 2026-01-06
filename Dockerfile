@@ -1,21 +1,31 @@
 FROM alpine:3.18.3
 
-# Setup tailscale
+# Install necessary networking tools and python for the health check
+RUN apk update && apk add --no-cache \
+    ca-certificates \
+    iptables \
+    ip6tables \
+    iproute2 \
+    python3 \
+    wget \
+    tar
+
 WORKDIR /tailscale.d
 
-COPY start.sh /tailscale.d/start.sh
+# Define default environment variables
+ENV TAILSCALE_VERSION="latest"
+ENV TAILSCALE_HOSTNAME="railway-app"
+ENV PORT="8080"
 
-ENV TAILSCALE_VERSION "latest"
-ENV TAILSCALE_HOSTNAME "railway-app"
-ENV TAILSCALE_ADDITIONAL_ARGS ""
-
-# CHANGED: Added 'python3' to this line so we can run a dummy health-check server
-RUN apk update && apk add ca-certificates iptables ip6tables python3 && rm -rf /var/cache/apk/*
-
+# Fetch and install Tailscale binaries
 RUN wget https://pkgs.tailscale.com/stable/tailscale_${TAILSCALE_VERSION}_amd64.tgz && \
-  tar xzf tailscale_${TAILSCALE_VERSION}_amd64.tgz --strip-components=1
+    tar xzf tailscale_${TAILSCALE_VERSION}_amd64.tgz --strip-components=1 && \
+    rm tailscale_${TAILSCALE_VERSION}_amd64.tgz
 
+# Create necessary directories for Tailscale state and sockets
 RUN mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale
 
+COPY start.sh ./start.sh
 RUN chmod +x ./start.sh
+
 CMD ["./start.sh"]
