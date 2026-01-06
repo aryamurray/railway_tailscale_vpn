@@ -1,12 +1,12 @@
 #!/bin/sh
 
-# Start Tailscale daemon with explicitly disabled IPv6 in the tun device
+# Start Tailscale daemon
 ./tailscaled --state=/var/lib/tailscale/tailscaled.state \
     --socket=/var/run/tailscale/tailscaled.sock \
     --tun=userspace-networking \
     --socks5-server=localhost:1055 \
     --outbound-http-proxy-listen=localhost:1080 \
-    --tun-ipv6=false &
+    --verbose=1 &
 
 sleep 3
 
